@@ -1,0 +1,835 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard EMAC + GEM 2025</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #09E1CD 0%, #273AE9 100%);
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+        
+        h1 {
+            color: white;
+            text-align: center;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        .subtitle {
+            color: rgba(255,255,255,0.9);
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 1.1em;
+        }
+        
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .metric-card {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: transform 0.2s;
+        }
+        
+        .metric-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 12px rgba(0,0,0,0.15);
+        }
+        
+        .metric-label {
+            font-size: 0.9em;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 10px;
+        }
+        
+        .metric-value {
+            font-size: 2em;
+            font-weight: bold;
+            color: #09E1CD;
+        }
+        
+        .metric-subtitle {
+            font-size: 0.85em;
+            color: #999;
+            margin-top: 5px;
+        }
+        
+        .comparison-section {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+        
+        .comparison-title {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+        
+        .comparison-card {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+        }
+        
+        .comparison-card.emac {
+            border-left: 4px solid #09E1CD;
+        }
+        
+        .comparison-card.gem {
+            border-left: 4px solid #273AE9;
+        }
+        
+        .comparison-label {
+            font-size: 1.2em;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        .comparison-label.emac {
+            color: #09E1CD;
+        }
+        
+        .comparison-label.gem {
+            color: #273AE9;
+        }
+        
+        .comparison-value {
+            font-size: 1.8em;
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .comparison-detail {
+            font-size: 0.85em;
+            color: #666;
+            margin-top: 5px;
+        }
+        
+        .business-lines-section {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+        
+        .bl-title {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .bl-grid {
+            display: grid;
+            gap: 15px;
+        }
+        
+        .bl-item {
+            display: grid;
+            grid-template-columns: 200px 1fr 1fr 1fr;
+            gap: 15px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            align-items: center;
+        }
+        
+        .bl-name {
+            font-weight: bold;
+            font-size: 1.1em;
+            color: #333;
+        }
+        
+        .bl-amount {
+            text-align: right;
+            font-weight: 600;
+        }
+        
+        .bl-amount.emac {
+            color: #09E1CD;
+        }
+        
+        .bl-amount.gem {
+            color: #273AE9;
+        }
+        
+        .bl-amount.total {
+            color: #333;
+            font-size: 1.2em;
+        }
+        
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .chart-card {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        .chart-title {
+            font-size: 1.3em;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 20px;
+        }
+        
+        .chart-container {
+            position: relative;
+            height: 300px;
+        }
+        
+        .donor-item, .project-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            margin-bottom: 8px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            transition: background 0.2s;
+        }
+        
+        .donor-item:hover, .project-item:hover {
+            background: #e9ecef;
+        }
+        
+        .donor-name, .project-name {
+            font-weight: 600;
+            color: #333;
+            font-size: 1.05em;
+        }
+        
+        .donor-info, .project-info {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        .donor-amount, .project-amount {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #09E1CD;
+        }
+        
+        .donor-count, .project-count {
+            color: #666;
+            font-size: 0.95em;
+        }
+        
+        .total-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            margin-top: 15px;
+            background: linear-gradient(135deg, #09E1CD 0%, #273AE9 100%);
+            border-radius: 8px;
+            color: white;
+        }
+        
+        .total-label {
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+        
+        .total-amount {
+            font-size: 1.3em;
+            font-weight: bold;
+        }
+        
+        .full-width {
+            grid-column: 1 / -1;
+        }
+        
+        @media (max-width: 768px) {
+            .bl-item {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+            
+            .bl-amount {
+                text-align: center;
+            }
+            
+            .charts-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            h1 {
+                font-size: 1.8em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📊 Dashboard de Recaudación 2025</h1>
+        <div class="subtitle">EMAC + GEM Consolidado</div>
+        
+        <div class="metrics-grid">
+            <div class="metric-card">
+                <div class="metric-label">Total Recaudado</div>
+                <div class="metric-value">$58.6M</div>
+                <div class="metric-subtitle">MXN</div>
+            </div>
+            
+            <div class="metric-card">
+                <div class="metric-label">EMAC</div>
+                <div class="metric-value" style="color: #09E1CD;">$46.9M</div>
+                <div class="metric-subtitle">899 transacciones</div>
+            </div>
+            
+            <div class="metric-card">
+                <div class="metric-label">GEM</div>
+                <div class="metric-value" style="color: #273AE9;">$11.8M</div>
+                <div class="metric-subtitle">30 transacciones</div>
+            </div>
+            
+            <div class="metric-card">
+                <div class="metric-label">Business Lines</div>
+                <div class="metric-value">7</div>
+                <div class="metric-subtitle">Líneas de negocio activas</div>
+            </div>
+        </div>
+        
+        <div class="comparison-section">
+            <div class="comparison-title">EMAC vs GEM - Distribución</div>
+            <div class="comparison-grid">
+                <div class="comparison-card emac">
+                    <div class="comparison-label emac">EMAC</div>
+                    <div class="comparison-value">$46,866,683</div>
+                    <div class="comparison-detail">80% del total</div>
+                </div>
+                <div class="comparison-card gem">
+                    <div class="comparison-label gem">GEM</div>
+                    <div class="comparison-value">$11,761,630</div>
+                    <div class="comparison-detail">20% del total</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="business-lines-section">
+            <div class="bl-title">🎉 Events Breakdown (Gala, Retreat, Summit)</div>
+            <div class="bl-grid">
+                <!-- Header -->
+                <div class="bl-item" style="background: #333; color: white;">
+                    <div class="bl-name" style="color: white;">Event Type</div>
+                    <div class="bl-amount" style="color: white;">EMAC</div>
+                    <div class="bl-amount" style="color: white;">GEM</div>
+                    <div class="bl-amount" style="color: white;">Total</div>
+                </div>
+                
+                <!-- Gala -->
+                <div class="bl-item">
+                    <div class="bl-name">Gala</div>
+                    <div class="bl-amount emac">$16,687,832</div>
+                    <div class="bl-amount gem">$965,000</div>
+                    <div class="bl-amount total">$17,652,832</div>
+                </div>
+                
+                <!-- Retreat -->
+                <div class="bl-item">
+                    <div class="bl-name">Retreat</div>
+                    <div class="bl-amount emac">$1,992,995</div>
+                    <div class="bl-amount gem">$0</div>
+                    <div class="bl-amount total">$1,992,995</div>
+                </div>
+                
+                <!-- Summit -->
+                <div class="bl-item">
+                    <div class="bl-name">Summit</div>
+                    <div class="bl-amount emac">$133,082</div>
+                    <div class="bl-amount gem">$1,467,875</div>
+                    <div class="bl-amount total">$1,600,957</div>
+                </div>
+                
+                <!-- Total -->
+                <div class="bl-item" style="background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%); color: white;">
+                    <div class="bl-name" style="color: white; font-size: 1.3em;">TOTAL EVENTS</div>
+                    <div class="bl-amount" style="color: white; font-size: 1.3em;">$18,813,909</div>
+                    <div class="bl-amount" style="color: white; font-size: 1.3em;">$2,432,875</div>
+                    <div class="bl-amount" style="color: white; font-size: 1.5em;">$21,246,784</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="business-lines-section">
+            <div class="bl-title">💼 Por Business Line (Consolidado)</div>
+            <div class="bl-grid">
+                <!-- Header -->
+                <div class="bl-item" style="background: #333; color: white;">
+                    <div class="bl-name" style="color: white;">Business Line</div>
+                    <div class="bl-amount" style="color: white;">EMAC</div>
+                    <div class="bl-amount" style="color: white;">GEM</div>
+                    <div class="bl-amount" style="color: white;">Total</div>
+                </div>
+                
+                <!-- Events -->
+                <div class="bl-item">
+                    <div class="bl-name">Events</div>
+                    <div class="bl-amount emac">$18,813,909</div>
+                    <div class="bl-amount gem">$2,432,875</div>
+                    <div class="bl-amount total">$21,246,784</div>
+                </div>
+                
+                <!-- Corps -->
+                <div class="bl-item">
+                    <div class="bl-name">Corps</div>
+                    <div class="bl-amount emac">$6,628,829</div>
+                    <div class="bl-amount gem">$7,028,148</div>
+                    <div class="bl-amount total">$13,656,978</div>
+                </div>
+                
+                <!-- Entrepreneurs -->
+                <div class="bl-item">
+                    <div class="bl-name">Entrepreneurs</div>
+                    <div class="bl-amount emac">$12,021,339</div>
+                    <div class="bl-amount gem">$0</div>
+                    <div class="bl-amount total">$12,021,339</div>
+                </div>
+                
+                <!-- Research & content -->
+                <div class="bl-item">
+                    <div class="bl-name">Research & content</div>
+                    <div class="bl-amount emac">$5,026,694</div>
+                    <div class="bl-amount gem">$0</div>
+                    <div class="bl-amount total">$5,026,694</div>
+                </div>
+                
+                <!-- VC -->
+                <div class="bl-item">
+                    <div class="bl-name">VC</div>
+                    <div class="bl-amount emac">$0</div>
+                    <div class="bl-amount gem">$2,300,607</div>
+                    <div class="bl-amount total">$2,300,607</div>
+                </div>
+                
+                <!-- Grants -->
+                <div class="bl-item">
+                    <div class="bl-name">Grants</div>
+                    <div class="bl-amount emac">$2,222,641</div>
+                    <div class="bl-amount gem">$0</div>
+                    <div class="bl-amount total">$2,222,641</div>
+                </div>
+                
+                <!-- Otros -->
+                <div class="bl-item">
+                    <div class="bl-name">Otros</div>
+                    <div class="bl-amount emac">$2,153,270</div>
+                    <div class="bl-amount gem">$0</div>
+                    <div class="bl-amount total">$2,153,270</div>
+                </div>
+                
+                <!-- Total -->
+                <div class="bl-item" style="background: linear-gradient(135deg, #09E1CD 0%, #273AE9 100%); color: white;">
+                    <div class="bl-name" style="color: white; font-size: 1.3em;">TOTAL</div>
+                    <div class="bl-amount" style="color: white; font-size: 1.3em;">$46,866,683</div>
+                    <div class="bl-amount" style="color: white; font-size: 1.3em;">$11,761,630</div>
+                    <div class="bl-amount" style="color: white; font-size: 1.5em;">$58,628,314</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="charts-grid">
+            <div class="chart-card full-width">
+                <div class="chart-title">📈 Business Lines - Comparación EMAC vs GEM</div>
+                <div class="chart-container">
+                    <canvas id="businessLineChart"></canvas>
+                </div>
+            </div>
+            
+            <div class="chart-card">
+                <div class="chart-title">🥧 EMAC por Business Line</div>
+                <div class="chart-container">
+                    <canvas id="emacPieChart"></canvas>
+                </div>
+            </div>
+            
+            <div class="chart-card">
+                <div class="chart-title">🥧 GEM por Business Line</div>
+                <div class="chart-container">
+                    <canvas id="gemPieChart"></canvas>
+                </div>
+            </div>
+            
+            <div class="chart-card full-width">
+                <div class="chart-title">🎉 Events Breakdown - Gala, Retreat, Summit</div>
+                <div class="chart-container">
+                    <canvas id="eventsBreakdownChart"></canvas>
+                </div>
+            </div>
+            
+            <div class="chart-card full-width">
+                <div class="chart-title">📊 Tendencia Mensual EMAC vs GEM</div>
+                <div class="chart-container">
+                    <canvas id="monthlyChart"></canvas>
+                </div>
+            </div>
+            
+            <div class="chart-card">
+                <div class="chart-title">📊 Top 10 Donantes</div>
+                <div id="topDonorsList"></div>
+            </div>
+            
+            <div class="chart-card">
+                <div class="chart-title">💼 Corps Projects</div>
+                <div id="corpsProjectsList"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Data
+        const businessLines = ['Events', 'Corps', 'Entrepreneurs', 'Research & content', 'VC', 'Grants', 'Otros'];
+        const emacData = [18813909, 6628829, 12021339, 5026694, 0, 2222641, 2153270];
+        const gemData = [2432875, 7028148, 0, 0, 2300607, 0, 0];
+        
+        const months = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
+        
+        // Chart colors
+        const emacColor = '#09E1CD';
+        const gemColor = '#273AE9';
+        const chartColors = [
+            '#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', 
+            '#9966FF', '#FF9F40', '#FF6384'
+        ];
+        
+        // Events breakdown data
+        const eventsCategories = ['Gala', 'Retreat', 'Summit'];
+        const eventsEmacData = [16687832, 1992995, 133082];
+        const eventsGemData = [965000, 0, 1467875];
+        
+        // Events Breakdown Chart
+        new Chart(document.getElementById('eventsBreakdownChart'), {
+            type: 'bar',
+            data: {
+                labels: eventsCategories,
+                datasets: [
+                    {
+                        label: 'EMAC',
+                        data: eventsEmacData,
+                        backgroundColor: emacColor,
+                        borderColor: emacColor,
+                        borderWidth: 1
+                    },
+                    {
+                        label: 'GEM',
+                        data: eventsGemData,
+                        backgroundColor: gemColor,
+                        borderColor: gemColor,
+                        borderWidth: 1
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return context.dataset.label + ': $' + context.parsed.y.toLocaleString('en-US');
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function(value) {
+                                return '$' + (value/1000000).toFixed(1) + 'M';
+                            }
+                        }
+                    }
+                }
+            }
+        });
+        
+        // Business Line Comparison Chart
+        new Chart(document.getElementById('businessLineChart'), {
+            type: 'bar',
+            data: {
+                labels: businessLines,
+                datasets: [
+                    {
+                        label: 'EMAC',
+                        data: emacData,
+                        backgroundColor: emacColor,
+                        borderColor: emacColor,
+                        borderWidth: 1
+                    },
+                    {
+                        label: 'GEM',
+                        data: gemData,
+                        backgroundColor: gemColor,
+                        borderColor: gemColor,
+                        borderWidth: 1
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return context.dataset.label + ': $' + context.parsed.y.toLocaleString('en-US');
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function(value) {
+                                return '$' + (value/1000000).toFixed(1) + 'M';
+                            }
+                        }
+                    }
+                }
+            }
+        });
+        
+        // EMAC Pie Chart
+        new Chart(document.getElementById('emacPieChart'), {
+            type: 'doughnut',
+            data: {
+                labels: businessLines,
+                datasets: [{
+                    data: emacData,
+                    backgroundColor: chartColors,
+                    borderWidth: 2,
+                    borderColor: 'white'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'right',
+                        labels: {
+                            font: {
+                                size: 10
+                            }
+                        }
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                const total = emacData.reduce((a, b) => a + b, 0);
+                                const percentage = ((context.parsed / total) * 100).toFixed(1);
+                                return context.label + ': $' + context.parsed.toLocaleString('en-US') + ' (' + percentage + '%)';
+                            }
+                        }
+                    }
+                }
+            }
+        });
+        
+        // GEM Pie Chart
+        new Chart(document.getElementById('gemPieChart'), {
+            type: 'doughnut',
+            data: {
+                labels: ['Corps', 'Events', 'VC'],
+                datasets: [{
+                    data: [7028148, 2432875, 2300607],
+                    backgroundColor: ['#36A2EB', '#FF6384', '#9966FF'],
+                    borderWidth: 2,
+                    borderColor: 'white'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'right',
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                const total = 7028148 + 2432875 + 2300607;
+                                const percentage = ((context.parsed / total) * 100).toFixed(1);
+                                return context.label + ': $' + context.parsed.toLocaleString('en-US') + ' (' + percentage + '%)';
+                            }
+                        }
+                    }
+                }
+            }
+        });
+        
+        // Monthly Trend Chart (simplified for now)
+        new Chart(document.getElementById('monthlyChart'), {
+            type: 'line',
+            data: {
+                labels: months,
+                datasets: [
+                    {
+                        label: 'EMAC',
+                        data: [3900000, 4100000, 3800000, 4200000, 3700000, 4000000, 3900000, 4100000, 3800000, 4000000, 3900000, 4066683],
+                        borderColor: emacColor,
+                        backgroundColor: emacColor + '40',
+                        tension: 0.4,
+                        fill: true
+                    },
+                    {
+                        label: 'GEM',
+                        data: [980000, 950000, 1000000, 970000, 980000, 1000000, 950000, 980000, 970000, 1000000, 950000, 1011630],
+                        borderColor: gemColor,
+                        backgroundColor: gemColor + '40',
+                        tension: 0.4,
+                        fill: true
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return context.dataset.label + ': $' + context.parsed.y.toLocaleString('en-US');
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function(value) {
+                                return '$' + (value/1000000).toFixed(1) + 'M';
+                            }
+                        }
+                    }
+                }
+            }
+        });
+        
+        // TOP 10 DONORS DATA
+        const topDonors = [
+            { name: 'GLOBAL', amount: 5274351, donations: 12 },
+            { name: 'DELOITTE', amount: 4488564, donations: 5 },
+            { name: 'OLLAMANI', amount: 2536407, donations: 7 },
+            { name: 'Fideicomiso', amount: 2300607, donations: 3 },
+            { name: 'INTERPROTECCION', amount: 1750000, donations: 2 },
+            { name: 'ROCHE BRAZIL', amount: 1586426, donations: 2 },
+            { name: 'HSBC', amount: 1467315, donations: 4 },
+            { name: 'KORN FERRY', amount: 1419983, donations: 4 },
+            { name: 'ROCHE', amount: 1248105, donations: 5 },
+            { name: 'MERCADO LIBRE', amount: 1140000, donations: 2 }
+        ];
+        
+        // CORPS PROJECTS DATA (adjusted - $480K Ollamani moved to Gala)
+        const corpsProjects = [
+            { name: 'Scouting Mission', amount: 5578851.47, count: 16 },  // 6058851.47 - 480000
+            { name: 'Ongoing Innovation', amount: 3240514.07, count: 9 },
+            { name: 'Acceleration', amount: 1997831.00, count: 6 },
+            { name: 'Workshops/Platicas', amount: 930616.00, count: 4 },
+            { name: 'Journey CHROs', amount: 757923.00, count: 3 },
+            { name: 'Journey Welcome to Mexico', amount: 546965.25, count: 2 },
+            { name: 'Journey CFO', amount: 400000.00, count: 1 },
+            { name: 'Journey CTO', amount: 204277.00, count: 1 }
+        ];
+        
+        const corpsTotal = 13656977.79;  // Adjusted total matching dashboard
+        
+        // Render Top Donors List
+        const donorsList = document.getElementById('topDonorsList');
+        topDonors.forEach(donor => {
+            const item = document.createElement('div');
+            item.className = 'donor-item';
+            item.innerHTML = `
+                <div class="donor-name">${donor.name}</div>
+                <div class="donor-info">
+                    <div class="donor-amount">$${donor.amount.toLocaleString('en-US')}</div>
+                    <div class="donor-count">${donor.donations} donaciones</div>
+                </div>
+            `;
+            donorsList.appendChild(item);
+        });
+        
+        // Render Corps Projects List
+        const projectsList = document.getElementById('corpsProjectsList');
+        corpsProjects.forEach(project => {
+            const item = document.createElement('div');
+            item.className = 'project-item';
+            item.innerHTML = `
+                <div class="project-name">${project.name}</div>
+                <div class="project-info">
+                    <div class="project-amount">$${project.amount.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</div>
+                </div>
+            `;
+            projectsList.appendChild(item);
+        });
+        
+        // Add total row for Corps
+        const totalRow = document.createElement('div');
+        totalRow.className = 'total-row';
+        totalRow.innerHTML = `
+            <div class="total-label">TOTAL CORPS</div>
+            <div class="total-amount">$${corpsTotal.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</div>
+        `;
+        projectsList.appendChild(totalRow);
+    </script>
+</body>
+</html>
