@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Enero 2026 vs 2025</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #09E1CD 0%, #273AE9 100%);
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+        
+        h1 {
+            color: white;
+            text-align: center;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        .subtitle {
+            color: rgba(255,255,255,0.9);
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 1.1em;
+        }
+        
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .metric-card {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: transform 0.2s;
+        }
+        
+        .metric-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 12px rgba(0,0,0,0.15);
+        }
+        
+        .metric-label {
+            font-size: 0.9em;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 10px;
+        }
+        
+        .metric-value {
+            font-size: 2em;
+            font-weight: bold;
+            color: #09E1CD;
+        }
+        
+        .metric-comparison {
+            display: flex;
+            gap: 20px;
+            margin-top: 10px;
+            font-size: 0.9em;
+        }
+        
+        .comparison-item {
+            flex: 1;
+        }
+        
+        .comparison-year {
+            color: #999;
+            font-size: 0.85em;
+        }
+        
+        .comparison-value {
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .metric-change {
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 8px;
+            font-weight: 600;
+        }
+        
+        .change-positive {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .change-negative {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        
+        .comparison-section {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+        
+        .section-title {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .comparison-table th {
+            background: #333;
+            color: white;
+            padding: 15px;
+            text-align: left;
+        }
+        
+        .comparison-table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .comparison-table tr:hover {
+            background: #f8f9fa;
+        }
+        
+        .amount-2025 {
+            color: #273AE9;
+            font-weight: 600;
+        }
+        
+        .amount-2026 {
+            color: #09E1CD;
+            font-weight: 600;
+        }
+        
+        .change-cell {
+            font-weight: 600;
+        }
+        
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .chart-card {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        .chart-title {
+            font-size: 1.3em;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 20px;
+        }
+        
+        .chart-container {
+            position: relative;
+            height: 300px;
+        }
+        
+        .full-width {
+            grid-column: 1 / -1;
+        }
+        
+        .donors-list {
+            margin-top: 20px;
+        }
+        
+        .donor-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px;
+            margin-bottom: 8px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+        
+        .donor-name {
+            font-weight: 600;
+        }
+        
+        .donor-amount {
+            color: #09E1CD;
+            font-weight: bold;
+        }
+        
+        @media (max-width: 768px) {
+            .charts-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            h1 {
+                font-size: 1.8em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📊 Dashboard Enero 2026 vs 2025</h1>
+        <div class="subtitle">Comparativa EMAC + GEM</div>
+        
+        <!-- Main Metrics -->
+        <div class="metrics-grid">
+            <div class="metric-card">
+                <div class="metric-label">Total Recaudado Enero</div>
+                <div class="metric-value">$2.12M</div>
+                <div class="metric-comparison">
+                    <div class="comparison-item">
+                        <div class="comparison-year">2025</div>
+                        <div class="comparison-value">$1,143,947</div>
+                    </div>
+                    <div class="comparison-item">
+                        <div class="comparison-year">2026</div>
+                        <div class="comparison-value">$2,118,659</div>
+                    </div>
+                </div>
+                <div class="metric-change change-positive">
+                    ↑ $974,711 (+85.2%)
+                </div>
+            </div>
+            
+            <div class="metric-card">
+                <div class="metric-label">EMAC Enero</div>
+                <div class="metric-value">$1.81M</div>
+                <div class="metric-comparison">
+                    <div class="comparison-item">
+                        <div class="comparison-year">2025</div>
+                        <div class="comparison-value">$1,073,447</div>
+                    </div>
+                    <div class="comparison-item">
+                        <div class="comparison-year">2026</div>
+                        <div class="comparison-value">$1,813,174</div>
+                    </div>
+                </div>
+                <div class="metric-change change-positive">
+                    ↑ $739,727 (+68.9%)
+                </div>
+            </div>
+            
+            <div class="metric-card">
+                <div class="metric-label">GEM Enero</div>
+                <div class="metric-value">$305K</div>
+                <div class="metric-comparison">
+                    <div class="comparison-item">
+                        <div class="comparison-year">2025</div>
+                        <div class="comparison-value">$70,500</div>
+                    </div>
+                    <div class="comparison-item">
+                        <div class="comparison-year">2026</div>
+                        <div class="comparison-value">$305,485</div>
+                    </div>
+                </div>
+                <div class="metric-change change-positive">
+                    ↑ $234,985 (+333.3%)
+                </div>
+            </div>
+        </div>
+        
+        <!-- Charts -->
+        <div class="charts-grid">
+            <div class="chart-card">
+                <div class="chart-title">📈 Comparación Total EMAC vs GEM</div>
+                <div class="chart-container">
+                    <canvas id="totalComparisonChart"></canvas>
+                </div>
+            </div>
+            
+            <div class="chart-card">
+                <div class="chart-title">📊 Crecimiento por Entidad</div>
+                <div class="chart-container">
+                    <canvas id="growthChart"></canvas>
+                </div>
+            </div>
+            
+            <div class="chart-card full-width">
+                <div class="chart-title">💼 Business Lines - Enero 2026 vs 2025</div>
+                <div class="chart-container">
+                    <canvas id="businessLinesChart"></canvas>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Top Donors Comparison -->
+        <div class="comparison-section">
+            <div class="section-title">💼 Business Lines - Detalle Comparativo</div>
+            <table class="comparison-table">
+                <thead>
+                    <tr>
+                        <th>Business Line</th>
+                        <th style="text-align: right;">Enero 2025</th>
+                        <th style="text-align: right;">Enero 2026</th>
+                        <th style="text-align: right;">Variación</th>
+                        <th style="text-align: right;">%</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Entrepreneurs</strong></td>
+                        <td style="text-align: right;" class="amount-2025">$981,447</td>
+                        <td style="text-align: right;" class="amount-2026">$812,245</td>
+                        <td style="text-align: right;" class="change-cell" style="color: #721c24;">-$169,202</td>
+                        <td style="text-align: right;" style="color: #721c24;">-17.2%</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Research & Content</strong></td>
+                        <td style="text-align: right;" class="amount-2025">$0</td>
+                        <td style="text-align: right;" class="amount-2026">$539,091</td>
+                        <td style="text-align: right;" class="change-cell" style="color: #155724;">+$539,091</td>
+                        <td style="text-align: right;" style="color: #155724;">NEW</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Otros</strong></td>
+                        <td style="text-align: right;" class="amount-2025">$2,000</td>
+                        <td style="text-align: right;" class="amount-2026">$322,201</td>
+                        <td style="text-align: right;" class="change-cell" style="color: #155724;">+$320,201</td>
+                        <td style="text-align: right;" style="color: #155724;">+16,010%</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Corps</strong></td>
+                        <td style="text-align: right;" class="amount-2025">$70,500</td>
+                        <td style="text-align: right;" class="amount-2026">$305,485</td>
+                        <td style="text-align: right;" class="change-cell" style="color: #155724;">+$234,985</td>
+                        <td style="text-align: right;" style="color: #155724;">+333%</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Events</strong></td>
+                        <td style="text-align: right;" class="amount-2025">$90,000</td>
+                        <td style="text-align: right;" class="amount-2026">$139,636</td>
+                        <td style="text-align: right;" class="change-cell" style="color: #155724;">+$49,636</td>
+                        <td style="text-align: right;" style="color: #155724;">+55.2%</td>
+                    </tr>
+                    <tr style="background: #f8f9fa; font-weight: bold;">
+                        <td><strong>TOTAL</strong></td>
+                        <td style="text-align: right;">$1,143,947</td>
+                        <td style="text-align: right;">$2,118,659</td>
+                        <td style="text-align: right;" style="color: #155724;">+$974,712</td>
+                        <td style="text-align: right;" style="color: #155724;">+85.2%</td>
+                    </tr>
+                </tbody>
+            </table>
+            <div style="margin-top: 15px; padding: 15px; background: #d4edda; border-radius: 8px; color: #155724;">
+                <strong>✅ Insights:</strong> Research & Content ($539K de Endeavor Saudi Arabia) es NUEVO en 2026.
+            </div>
+        </div>
+        
+        <!-- Top Donors Comparison -->
+        <div class="comparison-section">
+            <div class="section-title">💼 Corps Projects - Detalle</div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px;">
+                <div>
+                    <h3 style="color: #273AE9; margin-bottom: 15px;">Enero 2025 - $70,500</h3>
+                    <div style="padding: 15px; background: #f8f9fa; border-radius: 8px; margin-bottom: 10px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <div>
+                                <strong>Acceleration</strong>
+                                <div style="font-size: 0.9em; color: #666;">PRODUCTOS ATO (GEM)</div>
+                            </div>
+                            <div style="font-weight: bold; color: #273AE9;">$70,500</div>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <h3 style="color: #09E1CD; margin-bottom: 15px;">Enero 2026 - $305,485</h3>
+                    <div style="padding: 15px; background: #f8f9fa; border-radius: 8px; margin-bottom: 10px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <div>
+                                <strong>SCOUTING MISSION</strong>
+                                <div style="font-size: 0.9em; color: #666;">OLLAMANI (GEM)</div>
+                            </div>
+                            <div style="font-weight: bold; color: #09E1CD;">$305,485</div>
+                        </div>
+                    </div>
+                    <div style="padding: 10px; background: #d4edda; border-radius: 8px; margin-top: 10px;">
+                        <div style="font-size: 0.9em; color: #155724;">
+                            <strong>Cambio:</strong> De Acceleration → Scouting Mission (+$234,985 / +333%)
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Top Donors Comparison -->
+        <div class="comparison-section">
+            <div class="section-title">🏆 Top Donantes - Comparación</div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px;">
+                <div>
+                    <h3 style="color: #273AE9; margin-bottom: 15px;">Enero 2025</h3>
+                    <div class="donors-list" id="donors2025"></div>
+                </div>
+                <div>
+                    <h3 style="color: #09E1CD; margin-bottom: 15px;">Enero 2026</h3>
+                    <div class="donors-list" id="donors2026"></div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Key Insights -->
+        <div class="comparison-section">
+            <div class="section-title">💡 Key Insights Enero 2026</div>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
+                <div style="padding: 20px; background: #d4edda; border-radius: 10px;">
+                    <h3 style="color: #155724; margin-bottom: 10px;">✅ Crecimiento Total</h3>
+                    <p style="color: #155724;">Enero 2026 creció <strong>85.2%</strong> vs mismo mes 2025</p>
+                </div>
+                <div style="padding: 20px; background: #d1ecf1; border-radius: 10px;">
+                    <h3 style="color: #0c5460; margin-bottom: 10px;">🆕 Research & Content</h3>
+                    <p style="color: #0c5460;"><strong>$539K</strong> de Endeavor Saudi Arabia (nueva categoría)</p>
+                </div>
+                <div style="padding: 20px; background: #fff3cd; border-radius: 10px;">
+                    <h3 style="color: #856404; margin-bottom: 10px;">🚀 Otros Creció</h3>
+                    <p style="color: #856404;"><strong>+16,010%</strong> ($2K → $322K) principalmente GLOBAL</p>
+                </div>
+                <div style="padding: 20px; background: #f8d7da; border-radius: 10px;">
+                    <h3 style="color: #721c24; margin-bottom: 10px;">📉 Entrepreneurs</h3>
+                    <p style="color: #721c24;">Bajó <strong>17.2%</strong> ($981K → $812K)</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Chart colors
+        const color2025 = '#273AE9';
+        const color2026 = '#09E1CD';
+        
+        // Total Comparison Chart
+        new Chart(document.getElementById('totalComparisonChart'), {
+            type: 'bar',
+            data: {
+                labels: ['EMAC', 'GEM', 'Total'],
+                datasets: [
+                    {
+                        label: 'Enero 2025',
+                        data: [1073447, 70500, 1143947],
+                        backgroundColor: color2025,
+                        borderColor: color2025,
+                        borderWidth: 1
+                    },
+                    {
+                        label: 'Enero 2026',
+                        data: [1813174, 305485, 2118659],
+                        backgroundColor: color2026,
+                        borderColor: color2026,
+                        borderWidth: 1
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return context.dataset.label + ': $' + context.parsed.y.toLocaleString('en-US');
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function(value) {
+                                return '$' + (value/1000000).toFixed(1) + 'M';
+                            }
+                        }
+                    }
+                }
+            }
+        });
+        
+        // Growth Chart
+        new Chart(document.getElementById('growthChart'), {
+            type: 'bar',
+            data: {
+                labels: ['EMAC', 'GEM', 'Total'],
+                datasets: [{
+                    label: 'Crecimiento %',
+                    data: [68.9, 333.3, 85.2],
+                    backgroundColor: [
+                        'rgba(9, 225, 205, 0.7)',
+                        'rgba(9, 225, 205, 0.9)',
+                        'rgba(9, 225, 205, 0.8)'
+                    ],
+                    borderColor: color2026,
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return 'Crecimiento: ' + context.parsed.y.toFixed(1) + '%';
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function(value) {
+                                return value + '%';
+                            }
+                        }
+                    }
+                }
+            }
+        });
+        
+        // Business Lines Chart
+        new Chart(document.getElementById('businessLinesChart'), {
+            type: 'bar',
+            data: {
+                labels: ['Entrepreneurs', 'Events', 'Corps', 'Research & Content', 'Otros'],
+                datasets: [
+                    {
+                        label: 'Enero 2025',
+                        data: [981447, 90000, 70500, 0, 2000],
+                        backgroundColor: color2025,
+                        borderColor: color2025,
+                        borderWidth: 1
+                    },
+                    {
+                        label: 'Enero 2026',
+                        data: [812245, 139636, 305485, 539091, 322201],
+                        backgroundColor: color2026,
+                        borderColor: color2026,
+                        borderWidth: 1
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return context.dataset.label + ': $' + context.parsed.y.toLocaleString('en-US');
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function(value) {
+                                return '$' + (value/1000).toFixed(0) + 'K';
+                            }
+                        }
+                    }
+                }
+            }
+        });
+        
+        // Top Donors 2025
+        const donors2025 = [
+            { name: 'VTEX', amount: 90000 },
+            { name: 'DIET LINE', amount: 75000 },
+            { name: 'ZUBALE', amount: 75000 },
+            { name: 'YALO', amount: 75000 },
+            { name: 'PRODUCTOS ATO', amount: 70500 },
+            { name: 'FLAT', amount: 50000 },
+            { name: 'NOWPORTS', amount: 50000 },
+            { name: 'BELLISIMA', amount: 40000 },
+            { name: 'FAIRPLAY', amount: 30000 },
+            { name: 'CLARA', amount: 30000 }
+        ];
+        
+        const donors2026 = [
+            { name: 'ENDEAVOR SAUDI ARABIA', amount: 539091 },
+            { name: 'GLOBAL', amount: 321989 },
+            { name: 'OLLAMANI', amount: 305485 },
+            { name: 'CERVECERIA MODELO', amount: 139636 },
+            { name: '99 MINUTOS', amount: 50000 },
+            { name: 'EVA', amount: 30000 },
+            { name: 'BIRDMAN', amount: 25000 },
+            { name: 'BEN&FRANK', amount: 25000 },
+            { name: 'XEPELIN', amount: 25000 },
+            { name: 'YALO', amount: 25000 }
+        ];
+        
+        // Render donors lists
+        const donorsList2025 = document.getElementById('donors2025');
+        donors2025.forEach(donor => {
+            const item = document.createElement('div');
+            item.className = 'donor-item';
+            item.innerHTML = `
+                <div class="donor-name">${donor.name}</div>
+                <div class="donor-amount">$${donor.amount.toLocaleString('en-US')}</div>
+            `;
+            donorsList2025.appendChild(item);
+        });
+        
+        const donorsList2026 = document.getElementById('donors2026');
+        donors2026.forEach(donor => {
+            const item = document.createElement('div');
+            item.className = 'donor-item';
+            item.innerHTML = `
+                <div class="donor-name">${donor.name}</div>
+                <div class="donor-amount">$${donor.amount.toLocaleString('en-US')}</div>
+            `;
+            donorsList2026.appendChild(item);
+        });
+    </script>
+</body>
+</html>
