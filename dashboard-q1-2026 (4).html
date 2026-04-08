@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Q1 2026 vs 2025</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #09E1CD 0%, #273AE9 100%);
+            padding: 20px;
+            min-height: 100vh;
+        }
+        .container { max-width: 1600px; margin: 0 auto; }
+        h1 { color: white; text-align: center; margin-bottom: 10px; font-size: 2.5em; text-shadow: 2px 2px 4px rgba(0,0,0,0.2); }
+        .subtitle { color: rgba(255,255,255,0.9); text-align: center; margin-bottom: 30px; font-size: 1.1em; }
+
+        .metrics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-bottom: 30px; }
+        .metric-card { background: white; padding: 25px; border-radius: 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); transition: transform 0.2s; }
+        .metric-card:hover { transform: translateY(-5px); box-shadow: 0 8px 12px rgba(0,0,0,0.15); }
+        .metric-label { font-size: 0.9em; color: #666; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px; }
+        .metric-value { font-size: 2em; font-weight: bold; color: #09E1CD; }
+        .metric-comparison { display: flex; gap: 20px; margin-top: 10px; font-size: 0.9em; }
+        .comparison-item { flex: 1; }
+        .comparison-year { color: #999; font-size: 0.85em; }
+        .comparison-value { font-weight: 600; color: #333; }
+        .metric-change { margin-top: 10px; padding: 10px; border-radius: 8px; font-weight: 600; }
+        .change-positive { background: #d4edda; color: #155724; }
+        .change-negative { background: #f8d7da; color: #721c24; }
+        .change-neutral  { background: #e2e8f0; color: #475569; }
+
+        .comparison-section { background: white; padding: 25px; border-radius: 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); margin-bottom: 30px; }
+        .section-title { font-size: 1.5em; font-weight: bold; color: #333; margin-bottom: 20px; text-align: center; }
+
+        .comparison-table { width: 100%; border-collapse: collapse; }
+        .comparison-table th { background: #333; color: white; padding: 15px; text-align: left; }
+        .comparison-table td { padding: 12px 15px; border-bottom: 1px solid #eee; }
+        .comparison-table tr:hover { background: #f8f9fa; }
+        .amount-2025 { color: #273AE9; font-weight: 600; }
+        .amount-2026 { color: #09E1CD; font-weight: 600; }
+
+        .charts-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(500px, 1fr)); gap: 20px; margin-bottom: 20px; }
+        .chart-card { background: white; padding: 25px; border-radius: 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .chart-title { font-size: 1.3em; font-weight: bold; color: #333; margin-bottom: 20px; }
+        .chart-container { position: relative; height: 300px; }
+        .full-width { grid-column: 1 / -1; }
+
+        .donors-list { margin-top: 20px; }
+        .donor-item { display: flex; justify-content: space-between; padding: 12px; margin-bottom: 8px; background: #f8f9fa; border-radius: 8px; }
+        .donor-name { font-weight: 600; }
+        .donor-amount { font-weight: bold; }
+
+        @media (max-width: 768px) { .charts-grid { grid-template-columns: 1fr; } h1 { font-size: 1.8em; } }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>📊 Dashboard Q1 2026 vs 2025</h1>
+    <div class="subtitle">Enero + Febrero + Marzo · Comparativa EMAC + GEM</div>
+
+    <!-- KPI Cards -->
+    <div class="metrics-grid">
+        <div class="metric-card">
+            <div class="metric-label">Total Recaudado Q1</div>
+            <div class="metric-value">$8.29M</div>
+            <div class="metric-comparison">
+                <div class="comparison-item"><div class="comparison-year">2026</div><div class="comparison-value">$8,293,052</div></div>
+                <div class="comparison-item"><div class="comparison-year">2025</div><div class="comparison-value">$8,597,261</div></div>
+            </div>
+            <div class="metric-change change-negative">↓ $304,209 (-3.5%)</div>
+        </div>
+        <div class="metric-card">
+            <div class="metric-label">EMAC Q1</div>
+            <div class="metric-value">$5.92M</div>
+            <div class="metric-comparison">
+                <div class="comparison-item"><div class="comparison-year">2026</div><div class="comparison-value">$5,917,436</div></div>
+                <div class="comparison-item"><div class="comparison-year">2025</div><div class="comparison-value">$6,865,530</div></div>
+            </div>
+            <div class="metric-change change-negative">↓ $948,094 (-13.8%)</div>
+        </div>
+        <div class="metric-card">
+            <div class="metric-label">GEM Q1</div>
+            <div class="metric-value">$2.38M</div>
+            <div class="metric-comparison">
+                <div class="comparison-item"><div class="comparison-year">2026</div><div class="comparison-value">$2,375,616</div></div>
+                <div class="comparison-item"><div class="comparison-year">2025</div><div class="comparison-value">$1,731,731</div></div>
+            </div>
+            <div class="metric-change change-positive">↑ $643,885 (+37.2%)</div>
+        </div>
+    </div>
+
+    <!-- Charts -->
+    <div class="charts-grid">
+        <!-- Chart 1: EMAC vs GEM bar -->
+        <div class="chart-card">
+            <div class="chart-title">📈 Comparación Total EMAC vs GEM</div>
+            <div class="chart-container"><canvas id="totalComparisonChart"></canvas></div>
+        </div>
+
+        <!-- Chart 2: Growth % -->
+        <div class="chart-card">
+            <div class="chart-title">📊 Crecimiento por Entidad</div>
+            <div class="chart-container"><canvas id="growthChart"></canvas></div>
+        </div>
+
+        <!-- Chart 3: Dual Pie Budget -->
+        <div class="chart-card full-width">
+            <div class="chart-title">🎯 Presupuesto 2026</div>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:30px;">
+                <div>
+                    <div style="text-align:center; font-size:1.1em; font-weight:bold; color:#09E1CD; margin-bottom:10px;">Año Completo: $64,103,589</div>
+                    <div class="chart-container"><canvas id="budgetPieYear"></canvas></div>
+                </div>
+                <div>
+                    <div style="text-align:center; font-size:1.1em; font-weight:bold; color:#09E1CD; margin-bottom:10px;">Presupuesto Q1: $12,643,589</div>
+                    <div class="chart-container"><canvas id="budgetPieQ1"></canvas></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Chart 4: Business Lines grouped bar -->
+        <div class="chart-card full-width">
+            <div class="chart-title">💼 Business Lines - Q1 2026 vs 2025</div>
+            <div class="chart-container"><canvas id="businessLinesChart"></canvas></div>
+        </div>
+    </div>
+
+    <!-- Business Lines Table -->
+    <div class="comparison-section">
+        <div class="section-title">💼 Business Lines - Detalle Comparativo</div>
+        <table class="comparison-table">
+            <thead>
+                <tr>
+                    <th>Business Line</th>
+                    <th style="text-align:right;">Presupuesto Q1</th>
+                    <th style="text-align:right;">Q1 2026</th>
+                    <th style="text-align:right;">Q1 2025</th>
+                    <th style="text-align:right;">% Vs Ppto</th>
+                    <th style="text-align:right;">% Vs 2025</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Entrepreneurs</strong></td>
+                    <td style="text-align:right;">$2,172,500</td>
+                    <td style="text-align:right;" class="amount-2026">$2,800,876</td>
+                    <td style="text-align:right;" class="amount-2025">$2,721,638</td>
+                    <td style="text-align:right; color:#155724; font-weight:bold;">+28.9%</td>
+                    <td style="text-align:right; color:#155724; font-weight:bold;">+2.9%</td>
+                </tr>
+                <tr>
+                    <td><strong>Fund</strong></td>
+                    <td style="text-align:right;">$3,478,589</td>
+                    <td style="text-align:right;" class="amount-2026">$1,806,670</td>
+                    <td style="text-align:right;" class="amount-2025">$0</td>
+                    <td style="text-align:right; color:#dc3545; font-weight:bold;">-48.0%</td>
+                    <td style="text-align:right; color:#155724; font-weight:bold;">NEW</td>
+                </tr>
+                <tr>
+                    <td><strong>Events</strong></td>
+                    <td style="text-align:right;">$1,000,000</td>
+                    <td style="text-align:right;" class="amount-2026">$1,297,094</td>
+                    <td style="text-align:right;" class="amount-2025">$1,362,962</td>
+                    <td style="text-align:right; color:#155724; font-weight:bold;">+29.7%</td>
+                    <td style="text-align:right; color:#dc3545; font-weight:bold;">-4.8%</td>
+                </tr>
+                <tr>
+                    <td><strong>Research &amp; Content</strong></td>
+                    <td style="text-align:right;">$2,362,500</td>
+                    <td style="text-align:right;" class="amount-2026">$1,223,546</td>
+                    <td style="text-align:right;" class="amount-2025">$610,164</td>
+                    <td style="text-align:right; color:#dc3545; font-weight:bold;">-48.2%</td>
+                    <td style="text-align:right; color:#155724; font-weight:bold;">+100.5%</td>
+                </tr>
+                <tr>
+                    <td><strong>Corps</strong></td>
+                    <td style="text-align:right;">$3,630,000</td>
+                    <td style="text-align:right;" class="amount-2026">$718,946</td>
+                    <td style="text-align:right;" class="amount-2025">$3,392,076</td>
+                    <td style="text-align:right; color:#dc3545; font-weight:bold;">-80.2%</td>
+                    <td style="text-align:right; color:#dc3545; font-weight:bold;">-78.8%</td>
+                </tr>
+                <tr>
+                    <td><strong>Otros Ingresos</strong></td>
+                    <td style="text-align:right;">$0</td>
+                    <td style="text-align:right;" class="amount-2026">$445,920</td>
+                    <td style="text-align:right;" class="amount-2025">$510,421</td>
+                    <td style="text-align:right; font-weight:bold;">N/A</td>
+                    <td style="text-align:right; color:#dc3545; font-weight:bold;">-12.6%</td>
+                </tr>
+                <tr style="background:#f8f9fa; font-weight:bold;">
+                    <td><strong>TOTAL</strong></td>
+                    <td style="text-align:right;">$12,643,589</td>
+                    <td style="text-align:right;">$8,293,052</td>
+                    <td style="text-align:right;">$8,597,261</td>
+                    <td style="text-align:right; color:#dc3545;">-34.4%</td>
+                    <td style="text-align:right; color:#dc3545;">-3.5%</td>
+                </tr>
+            </tbody>
+        </table>
+        <div style="margin-top:15px; padding:15px; background:#d4edda; border-radius:8px; color:#155724;">
+            <strong>✅ Insights:</strong> Fund ($1.81M de Fideicomiso) es NUEVO en 2026. Entrepreneurs supera ppto +28.9%. Corps cayó -78.8% vs 2025 — impacto principal en la comparativa total.
+        </div>
+    </div>
+
+    <!-- Corps Projects -->
+    <div class="comparison-section">
+        <div class="section-title">💼 Corps Projects - Detalle Q1</div>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:30px;">
+            <div>
+                <h3 style="color:#09E1CD; margin-bottom:15px;">Q1 2026 — $718,946</h3>
+                <div style="padding:15px; background:#f8f9fa; border-radius:8px; margin-bottom:10px;">
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <div><strong>Scouting Mission / Journey</strong><div style="font-size:0.9em; color:#666;">COMANDO / OLLAMANI (GEM)</div></div>
+                        <div style="font-weight:bold; color:#09E1CD;">$568,946</div>
+                    </div>
+                </div>
+                <div style="padding:15px; background:#f8f9fa; border-radius:8px; margin-bottom:10px;">
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <div><strong>Journey CFO</strong><div style="font-size:0.9em; color:#666;">EY (EMAC)</div></div>
+                        <div style="font-weight:bold; color:#09E1CD;">$150,000</div>
+                    </div>
+                </div>
+            </div>
+            <div>
+                <h3 style="color:#273AE9; margin-bottom:15px;">Q1 2025 — $3,392,076</h3>
+                <div style="padding:15px; background:#f8f9fa; border-radius:8px; margin-bottom:10px;">
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <div><strong>Health Tech / Scouting</strong><div style="font-size:0.9em; color:#666;">DELOITTE (GEM + EMAC)</div></div>
+                        <div style="font-weight:bold; color:#273AE9;">$2,653,494</div>
+                    </div>
+                </div>
+                <div style="padding:15px; background:#f8f9fa; border-radius:8px; margin-bottom:10px;">
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <div><strong>Journey CTO</strong><div style="font-size:0.9em; color:#666;">AMAZON WEB SERVICES (EMAC)</div></div>
+                        <div style="font-weight:bold; color:#273AE9;">$204,277</div>
+                    </div>
+                </div>
+                <div style="padding:15px; background:#f8f9fa; border-radius:8px;">
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <div><strong>Otros Corps</strong><div style="font-size:0.9em; color:#666;">FARMACIAS DEL AHORRO + ATO (GEM)</div></div>
+                        <div style="font-weight:bold; color:#273AE9;">$534,305</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Monthly Breakdown -->
+    <div class="comparison-section">
+        <div class="section-title">📅 Desglose Mensual Q1</div>
+        <table class="comparison-table">
+            <thead>
+                <tr>
+                    <th>Mes</th>
+                    <th style="text-align:right;">2026 Total</th>
+                    <th style="text-align:right;">2026 EMAC</th>
+                    <th style="text-align:right;">2026 GEM</th>
+                    <th style="text-align:right;">2025 Total</th>
+                    <th style="text-align:right;">% Cambio</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Enero</strong></td>
+                    <td style="text-align:right;" class="amount-2026">$1,979,023</td>
+                    <td style="text-align:right;">$1,673,538</td>
+                    <td style="text-align:right;">$305,485</td>
+                    <td style="text-align:right;" class="amount-2025">$1,143,947</td>
+                    <td style="text-align:right; color:#155724; font-weight:bold;">+73.0%</td>
+                </tr>
+                <tr>
+                    <td><strong>Febrero</strong></td>
+                    <td style="text-align:right;" class="amount-2026">$1,458,110</td>
+                    <td style="text-align:right;">$1,458,110</td>
+                    <td style="text-align:right;">$0</td>
+                    <td style="text-align:right;" class="amount-2025">$834,443</td>
+                    <td style="text-align:right; color:#155724; font-weight:bold;">+74.7%</td>
+                </tr>
+                <tr>
+                    <td><strong>Marzo</strong></td>
+                    <td style="text-align:right;" class="amount-2026">$4,855,919</td>
+                    <td style="text-align:right;">$2,785,788</td>
+                    <td style="text-align:right;">$2,070,131</td>
+                    <td style="text-align:right;" class="amount-2025">$6,618,871</td>
+                    <td style="text-align:right; color:#dc3545; font-weight:bold;">-26.6%</td>
+                </tr>
+                <tr style="background:#f8f9fa; font-weight:bold;">
+                    <td><strong>TOTAL Q1</strong></td>
+                    <td style="text-align:right;">$8,293,052</td>
+                    <td style="text-align:right;">$5,917,436</td>
+                    <td style="text-align:right;">$2,375,616</td>
+                    <td style="text-align:right;">$8,597,261</td>
+                    <td style="text-align:right; color:#dc3545; font-weight:bold;">-3.5%</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Top Donors -->
+    <div class="comparison-section">
+        <div class="section-title">🏆 Top Donantes Q1 - Comparación</div>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:30px;">
+            <div>
+                <h3 style="color:#09E1CD; margin-bottom:15px;">Q1 2026</h3>
+                <div class="donors-list" id="donors2026"></div>
+            </div>
+            <div>
+                <h3 style="color:#273AE9; margin-bottom:15px;">Q1 2025</h3>
+                <div class="donors-list" id="donors2025"></div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    const color2026 = '#09E1CD';
+    const color2025 = '#273AE9';
+
+    // Chart 1: EMAC vs GEM comparison
+    new Chart(document.getElementById('totalComparisonChart'), {
+        type: 'bar',
+        data: {
+            labels: ['EMAC', 'GEM', 'Total'],
+            datasets: [
+                { label: 'Q1 2026', data: [5917436, 2375616, 8293052], backgroundColor: color2026, borderColor: color2026, borderWidth: 1 },
+                { label: 'Q1 2025', data: [6865530, 1731731, 8597261], backgroundColor: color2025, borderColor: color2025, borderWidth: 1 }
+            ]
+        },
+        options: {
+            responsive: true, maintainAspectRatio: false,
+            plugins: {
+                legend: { position: 'top' },
+                tooltip: { callbacks: { label: ctx => ctx.dataset.label + ': $' + ctx.parsed.y.toLocaleString('en-US') } }
+            },
+            scales: { y: { beginAtZero: true, ticks: { callback: v => '$' + (v/1000000).toFixed(1) + 'M' } } }
+        }
+    });
+
+    // Chart 2: Growth %
+    new Chart(document.getElementById('growthChart'), {
+        type: 'bar',
+        data: {
+            labels: ['EMAC', 'GEM', 'Total'],
+            datasets: [{
+                label: 'Crecimiento %',
+                data: [13.8, 37.2, 3.5],
+                backgroundColor: ['rgba(220,53,69,0.8)', 'rgba(9,225,205,0.8)', 'rgba(220,53,69,0.8)'],
+                borderColor: ['#dc3545', '#09E1CD', '#dc3545'],
+                borderWidth: 2
+            }]
+        },
+        options: {
+            responsive: true, maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false },
+                tooltip: { callbacks: { label: ctx => {
+                    const labels = ['EMAC', 'GEM', 'Total'];
+                    const vals = [-13.8, 37.2, -3.5];
+                    return 'Crecimiento: ' + vals[ctx.dataIndex].toFixed(1) + '%';
+                }}},
+                datalabels: { display: false }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        callback: (v, i, ticks) => {
+                            const map = { 0: '0%', 5: '', 10: '', 13.8: '-13.8%', 15: '', 20: '', 25: '', 30: '', 37.2: '+37.2%', 35: '', 3.5: '-3.5%' };
+                            return '';
+                        }
+                    }
+                }
+            },
+            animation: {
+                onComplete: function() {
+                    const chart = this;
+                    const ctx = chart.ctx;
+                    const vals = [-13.8, 37.2, -3.5];
+                    const colors = ['#dc3545', '#155724', '#dc3545'];
+                    chart.data.datasets.forEach((dataset, i) => {
+                        const meta = chart.getDatasetMeta(i);
+                        meta.data.forEach((bar, index) => {
+                            const val = vals[index];
+                            const label = (val >= 0 ? '+' : '') + val.toFixed(1) + '%';
+                            ctx.fillStyle = colors[index];
+                            ctx.font = 'bold 14px sans-serif';
+                            ctx.textAlign = 'center';
+                            ctx.fillText(label, bar.x, bar.y - 8);
+                        });
+                    });
+                }
+            }
+        }
+    });
+
+    // Chart 3a: Annual budget pie
+    new Chart(document.getElementById('budgetPieYear'), {
+        type: 'doughnut',
+        data: {
+            labels: ['Events', 'Corps', 'Entrepreneurs', 'Research & Content', 'Fund', 'Grants'],
+            datasets: [{ data: [24360000, 14520000, 10295000, 9450000, 3478589, 2000000], backgroundColor: ['#FF6384','#36A2EB','#FFCE56','#4BC0C0','#9966FF','#FF9F40'], borderWidth: 2, borderColor: 'white' }]
+        },
+        options: {
+            responsive: true, maintainAspectRatio: false,
+            plugins: {
+                legend: { position: 'right' },
+                tooltip: { callbacks: { label: ctx => ctx.label + ': $' + (ctx.parsed/1000000).toFixed(1) + 'M (' + ((ctx.parsed/64103589)*100).toFixed(1) + '%)' } }
+            }
+        }
+    });
+
+    // Chart 3b: Q1 budget pie
+    new Chart(document.getElementById('budgetPieQ1'), {
+        type: 'doughnut',
+        data: {
+            labels: ['Corps', 'Research & Content', 'Entrepreneurs', 'Fund', 'Events', 'Grants'],
+            datasets: [{ data: [3630000, 2362500, 2172500, 3478589, 1000000, 0], backgroundColor: ['#36A2EB','#4BC0C0','#FFCE56','#9966FF','#FF6384','#FF9F40'], borderWidth: 2, borderColor: 'white' }]
+        },
+        options: {
+            responsive: true, maintainAspectRatio: false,
+            plugins: {
+                legend: { position: 'right' },
+                tooltip: { callbacks: { label: ctx => ctx.label + ': $' + ctx.parsed.toLocaleString('en-US') + ' (' + ((ctx.parsed/12643589)*100).toFixed(1) + '%)' } }
+            }
+        }
+    });
+
+    // Chart 4: Business Lines grouped bar
+    new Chart(document.getElementById('businessLinesChart'), {
+        type: 'bar',
+        data: {
+            labels: ['Entrepreneurs', 'Fund', 'Events', 'Research & Content', 'Corps', 'Otros'],
+            datasets: [
+                { label: 'Presupuesto', data: [2172500, 3478589, 1000000, 2362500, 3630000, 0], backgroundColor: '#FFD700', borderColor: '#FFD700', borderWidth: 1 },
+                { label: 'Q1 2026', data: [2800876, 1806670, 1297094, 1223546, 718946, 445920], backgroundColor: color2026, borderColor: color2026, borderWidth: 1 },
+                { label: 'Q1 2025', data: [2721638, 0, 1362962, 610164, 3392076, 510421], backgroundColor: color2025, borderColor: color2025, borderWidth: 1 }
+            ]
+        },
+        options: {
+            responsive: true, maintainAspectRatio: false,
+            plugins: {
+                legend: { position: 'top' },
+                tooltip: { callbacks: { label: ctx => ctx.dataset.label + ': $' + ctx.parsed.y.toLocaleString('en-US') } }
+            },
+            scales: { y: { beginAtZero: true, ticks: { callback: v => '$' + (v/1000).toFixed(0) + 'K' } } }
+        }
+    });
+
+    // Donors 2026
+    const donors2026 = [
+        { name: 'Fund (Fideicomiso)', amount: 1806670 },
+        { name: 'BBVA', amount: 771264 },
+        { name: 'GLOBAL', amount: 767909 },
+        { name: 'ENDEAVOR SAUDI ARABIA', amount: 539091 },
+        { name: 'GLISCO', amount: 387434 },
+        { name: 'EY', amount: 340000 },
+        { name: 'BITSO', amount: 300000 },
+        { name: 'COMANDO (GEM)', amount: 305485 },
+        { name: '99 MINUTOS', amount: 150000 },
+        { name: 'AMERICAN EXPRESS (GEM)', amount: 150000 },
+    ];
+
+    const donors2025 = [
+        { name: 'ROCHE BRAZIL', amount: 1586426 },
+        { name: 'DELOITTE (EMAC+GEM)', amount: 2653494 },
+        { name: 'GLOBAL', amount: 507955 },
+        { name: 'BBVA', amount: 459749 },
+        { name: 'BITSO', amount: 279000 },
+        { name: 'AMAZON WEB SERVICES', amount: 214491 },
+        { name: 'VTEX', amount: 120000 },
+        { name: 'ZUBALE', amount: 100000 },
+        { name: 'YALO', amount: 100000 },
+        { name: 'NOWPORTS', amount: 100000 },
+    ];
+
+    function renderDonors(listId, donors, amountColor) {
+        const el = document.getElementById(listId);
+        donors.sort((a,b) => b.amount - a.amount).forEach(d => {
+            const item = document.createElement('div');
+            item.className = 'donor-item';
+            item.innerHTML = `<div class="donor-name">${d.name}</div><div class="donor-amount" style="color:${amountColor}">$${d.amount.toLocaleString('en-US')}</div>`;
+            el.appendChild(item);
+        });
+    }
+
+    renderDonors('donors2026', donors2026, '#09E1CD');
+    renderDonors('donors2025', donors2025, '#273AE9');
+</script>
+</body>
+</html>
